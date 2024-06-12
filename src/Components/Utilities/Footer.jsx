@@ -11,7 +11,7 @@ const Footer = () => {
         <aside>
           <img src={pokemon} alt="" className="w-full h-14 object-contain" />
           <p className="font-bold">
-            ACME Industries Ltd. <br/>Providing reliable tech since 1992
+            Sample Industries Ltd. <br/>Providing reliable tech since 1992
           </p> 
           <p>Copyright © 2024 - All right reserved</p>
         </aside> 

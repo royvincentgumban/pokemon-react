@@ -923,10 +923,11 @@ video {
 }
 
 
-
-
-
-
+.home-background {
+    background-image: url("../Assets/img/bg/home-bg.jpg");
+    background-position: center;
+    background-size: cover;
+}
 
 
 

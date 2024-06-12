@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Loading from "../Utilities/Loading";
+import Navbar from "../Utilities/Navbar";
 import Footer from "../Utilities/Footer";
 
 import "../style.css";
@@ -36,10 +37,13 @@ const Pokedex = () => {
   return (
     <main>
 
-      <section className="min-h-screen relative">
+      <header>
+        <Navbar />
+      </header>
+
+      <section className="min-h-screen relative mt-16">
         <div className="max-w-[1400px] min-h-screen overflow-hidden m-auto">
           <div className="flex flex-wrap items-center justify-center p-8">
-
              <motion.div
               className="w-1/2 leading-normal mb-10"
               initial={{ opacity: 0, x: -100 }}
