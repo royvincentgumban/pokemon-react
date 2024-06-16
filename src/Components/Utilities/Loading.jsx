@@ -7,26 +7,11 @@ const Loading = () => {
 
     return (
         <div className="flex flex-wrap items-center justify-center w-full">
-            <div className="pokedex-container">
-                <div className="pokedex-item skeleton">
-
+            {[...Array(12)].map((_, index) => (
+                <div key={index} className="pokedex-container">
+                    <div className="pokedex-item skeleton"></div>
                 </div>
-            </div>
-            <div className="pokedex-container">
-                <div className="pokedex-item skeleton">
-
-                </div>
-            </div>
-            <div className="pokedex-container">
-                <div className="pokedex-item skeleton">
-
-                </div>
-            </div>
-            <div className="pokedex-container">
-                <div className="pokedex-item skeleton">
-
-                </div>
-            </div>
+            ))}
         </div>
     );
 

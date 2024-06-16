@@ -17,6 +17,8 @@ const Pokedex = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+
+  //Fetching Data
   const fetchPokemonData = async () => {
     try {
       const response = await axios.get('http://localhost:3001/api/data');
@@ -63,6 +65,8 @@ const Pokedex = () => {
     }
   })
 
+
+  //Reset Filter
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedType('');
@@ -70,6 +74,7 @@ const Pokedex = () => {
     setSortOrder('lowestNum');
   };
 
+  //Search Folt
   const handleSearchChange = (event) => {
       setSearchQuery(event.target.value);
   };
@@ -337,6 +342,7 @@ const Pokedex = () => {
                       items.identifier === "Flying" ? "hover:bg-gradient-to-t from-transparent to-[#89f]" :
                       items.identifier === "Ghost" ? "hover:bg-gradient-to-t from-transparent to-[#66b]" :
                       items.identifier === "Bug" ? "hover:bg-gradient-to-t from-transparent to-[#ab2]" :
+                      items.identifier === "Normal" ? "hover:bg-gradient-to-t from-transparent to-[#aa9]" :
                       ""
                   }`}
                   
@@ -526,11 +532,28 @@ const Pokedex = () => {
                               <h1 className="uppercase mb-2 text-xs font-bold">Evolution</h1>
 
                               <div className="w-full h-14 flex items-center justify-between gap-4">
+                                
                                   <img src={`/images/sprites/${items.firstEvo}`} alt="" className="w-full h-full object-contain" />
                                   <p className="w-full border border-[#222224] rounded-full text-xs font-semibold capitalize py-1"> {items.first_evolution} </p>
+
                                   <img src={`/images/sprites/${items.secondEvo}`} alt="" className="w-full h-full object-contain" />
-                                  <p className="w-full border border-[#222224] rounded-full text-xs font-semibold capitalize py-1"> {items.second_evolution}  </p>
-                                  <img src={`/images/sprites/${items.finalEvo}`} alt="" className="w-full h-full object-contain" />
+                                  
+                                  {items.second_evolution && (
+                                    <p className="w-full border border-[#222224] rounded-full text-xs font-semibold capitalize py-1">
+                                      {items.second_evolution}
+                                    </p>
+                                  )}
+                                  
+
+                                  {items.finalEvo && (
+                                    <img
+                                      src={`/images/sprites/${items.finalEvo}`}
+                                      alt=""
+                                      className="w-full h-full object-contain"
+                                    />
+                                  )}
+                                  
+
                               </div>
                             </div>
 
@@ -568,9 +591,13 @@ const Pokedex = () => {
               )
             )}
           </div>
+
+
         </div>
       </section>
 
+
+    
 
     <Footer />
 
