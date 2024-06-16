@@ -11,9 +11,10 @@ const Footer = () => {
         <aside>
           <img src={pokemon} alt="" className="w-full h-14 object-contain" />
           <p className="font-bold">
-            Sample Industries Ltd. <br/>Providing reliable tech since 1992
+            2024 Pokémon. ©1995 - 2024
           </p> 
-          <p>Copyright © 2024 - All right reserved</p>
+          <p>Nintendo/Creatures Inc./GAME FREAK inc. TM,</p>
+          <p>©Nintendo</p>
         </aside> 
         <nav>
           <div className="grid grid-flow-col gap-4">

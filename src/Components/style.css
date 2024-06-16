@@ -922,13 +922,10 @@ video {
     opacity: .75;
 }
 
-
-.home-background {
-    background-image: url("../Assets/img/bg/home-bg.jpg");
-    background-position: center;
-    background-size: cover;
+.select[multiple] {
+    height: 3rem !important;
+    background-color: red;
 }
-
 
 
 @media only screen and (max-width:968px) {

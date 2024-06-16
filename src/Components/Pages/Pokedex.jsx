@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Loading from "../Utilities/Loading";
-import Navbar from "../Utilities/Navbar";
 import Footer from "../Utilities/Footer";
 
 import "../style.css";
@@ -11,6 +10,10 @@ import axios from 'axios';
 const Pokedex = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedWeakness, setSelectedWeakness] = useState('');
+  const [sortOrder, setSortOrder] = useState('lowestNum');
+
   const [pokemonList, setPokemonList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,20 +31,158 @@ const Pokedex = () => {
     fetchPokemonData();
   }, []);
 
-  const filteredPokemon = pokemonList.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPokemon = pokemonList
+  .filter((pokemon) => {
+    const nameMatch = pokemon.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const typeMatch = selectedType === '' || pokemon.type.includes(selectedType);
+    const weaknessMatch = selectedWeakness === '' || pokemon.weakness.includes(selectedWeakness);
 
+    return nameMatch && typeMatch && weaknessMatch;
+  })
+  .sort((a, b) => {
+    if (sortOrder === 'ascending' || sortOrder === 'descending') {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+
+      if (sortOrder === 'ascending') {
+        return nameA.localeCompare(nameB);
+      } else {
+        return nameB.localeCompare(nameA);
+      }
+    } else if (sortOrder === 'lowestNum' || sortOrder === 'highestNum') {
+      const numA = a.number;
+      const numB = b.number;
+
+      if (sortOrder === 'lowestNum') {
+        return numA - numB;
+      } else {
+        return numB - numA;
+      }
+    } else {
+      return 0;
+    }
+  })
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setSelectedType('');
+    setSelectedWeakness('');
+    setSortOrder('lowestNum');
+  };
+
+  const handleSearchChange = (event) => {
+      setSearchQuery(event.target.value);
+  };
+
+  const handleTypeChange = (event) => {
+    setSelectedType(event.target.value);
+  };
+
+  const handleWeaknessChange = (event) => {
+    setSelectedWeakness(event.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+
+
+
+  const getWeaknessType = (weakness) => {
+    switch (weakness) {
+      case "Grass":
+        return "grassIcon";
+      case "Water":
+        return "waterIcon";
+      case "Fire":
+        return "fireIcon";
+      case "Electric":
+        return "electricIcon";
+      case "Flying":
+        return "flyingIcon";
+      case "Ghost":
+        return "ghostIcon";
+      case "Poison":
+        return "poisonIcon";
+      case "Normal":
+        return "normalIcon";
+      case "Ice":
+        return "iceIcon";
+      case "Steel":
+        return "steelIcon";
+      case "Ground":
+        return "groundIcon";
+      case "Dragon":
+        return "dragonIcon";
+      case "Fighting":
+        return "fightingIcon";
+      case "Rock":
+        return "rockIcon";
+      case "Bug":
+        return "bugIcon";
+      case "Dark":
+        return "darkIcon";
+      case "Psychic":
+        return "psychicIcon";
+      case "Fairy":
+        return "fairyIcon";
+
+      default:
+        return "hidden";
+    }
+  }
+
+
+  const getType = (type) => {
+    switch (type) {
+      case "Grass":
+        return "bg-[#7c5]";
+      case "Water":
+        return "bg-[#39f]";
+      case "Fire":
+        return "bg-[#f42]";
+      case "Electric":
+        return "bg-[#fc3]";
+      case "Flying":
+        return "bg-[#89f]";
+      case "Ghost":
+        return "bg-[#66b]";
+      case "Poison":
+        return "bg-[#a59]";
+      case "Normal":
+        return "bg-[#aa9]";
+      case "Ice":
+        return "bg-[#6cf]";
+      case "Steel":
+        return "bg-[#aab]";
+      case "Ground":
+        return "bg-[#db5]";
+      case "Dragon":
+        return "bg-[#76e]";
+      case "Fighting":
+        return "bg-[#b54]";
+      case "Rock":
+        return "bg-[#ba6]";
+      case "Bug":
+        return "bg-[#ab2]";
+      case "Dark":
+        return "bg-[#754]";
+      case "Psychic":
+        return "bg-[#f59]";
+      case "Fairy":
+        return "bg-[#e9e]";
+      default:
+        return "hidden";
+    }
+  };
+  
+  
 
 
   return (
     <main>
 
-      <header>
-        <Navbar />
-      </header>
-
-      <section className="min-h-screen relative mt-16">
+      <section className="min-h-screen relative">
         <div className="max-w-[1400px] min-h-screen overflow-hidden m-auto">
           <div className="flex flex-wrap items-center justify-center p-8">
              <motion.div
@@ -63,10 +204,10 @@ const Pokedex = () => {
                 <label className="input flex items-center justify-center gap-2 rounded bg-white shadow">
                   <input type="text" className="grow"  placeholder="Search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                   />
 
-                  <button className="btn h-8 min-h-8 p-2 rounded bg-red-500 hover:bg-[#222224]">
+                  {/* <button className="btn h-8 min-h-8 p-2 rounded bg-red-500 hover:bg-[#222224]">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -86,38 +227,98 @@ const Pokedex = () => {
                         fill="#fff"
                       />
                     </svg>
-                  </button>
+                  </button> */}
                 </label>
               </div>
             </div>
 
+
+            <div className="w-full flex items-center mb-4">
+
+              <div className="w-full p-4 flex items-center justify-start gap-4 mb-4 ">
+                <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0" 
+                 onChange={handleSortChange}
+                 value={sortOrder}
+                >
+                  <option value="lowestNum">Lowest</option>
+                  <option value="highestNum">Highest</option>
+                  <option value="ascending">Ascending</option>
+                  <option  value="descending">Descending</option>
+                </select>
+              </div>
+
             
-            <div className="w-full p-4 flex items-center justify-end gap-4 mb-4">
-              <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
-                <option disabled selected>Type</option>
-                <option>Grass</option>
-                <option>Water</option>
+              <div className="w-full p-4 flex items-center justify-end gap-4 mb-4">
+              <select
+                className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0"
+                value={selectedType}
+                onChange={handleTypeChange}
+              >
+                <option value="" disabled>Type</option>
+                {[
+                  'Grass', 'Water', 'Fire', 'Electric', 'Flying', 'Ghost', 'Poison',
+                  'Normal', 'Ice', 'Steel', 'Ground', 'Dragon', 'Fighting', 'Rock',
+                  'Bug', 'Dark', 'Psychic', 'Fairy'
+                ].map((type, index) => (
+                  <option key={index}>{type}</option>
+                ))}
               </select>
 
-              <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
-                <option disabled selected>Weakness</option>
-                <option>Grass</option>
-                <option>Water</option>
-              </select>
+                <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0"
+                  value={selectedWeakness}
+                  onChange={handleWeaknessChange}
+                >
+                  <option value="" disabled>Weakness</option>
+                {[
+                  'Grass', 'Water', 'Fire', 'Electric', 'Flying', 'Ghost', 'Poison',
+                  'Normal', 'Ice', 'Steel', 'Ground', 'Dragon', 'Fighting', 'Rock',
+                  'Bug', 'Dark', 'Psychic', 'Fairy'
+                ].map((type, index) => (
+                  <option key={index}>{type}</option>
+                ))}
+                </select>
 
-              <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
-                <option disabled selected>Weight</option>
-                <option>1</option>
-                <option>2</option>
-              </select>
+                <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
+                  <option value="" disabled >Weight</option>
+                  <option>1</option>
+                  <option>2</option>
+                </select>
 
-              <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
-                <option disabled selected>Height</option>
-                <option>1</option>
-                <option>2</option>
-              </select>
+                <select className="select shadow w-32 max-w-xs border-0 outline-0 focus:shadow focus:border-0 focus:outline-0 focus:outline-offset-0">
+                  <option value="" disabled>Height</option>
+                  <option>1</option>
+                  <option>2</option>
+                </select>
+
+                <button className="btn h-10 w-10 min-h-8 p-2 rounded bg-red-500 hover:bg-[#222224]"
+                  onClick={resetFilters}
+                >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="w-4 h-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      >
+                      <path
+                        d="M21.9012 13H16.8506C16.3873 15.2822 14.3696 17 11.9506 17C9.53167 17 7.51391 15.2822 7.05064 13H2C2.50172 18.0533 6.76528 22 11.9506 22C17.136 22 21.3995 18.0533 21.9012 13Z"
+                        fill="#fff"
+                      />
+                      <path
+                        d="M21.9012 11C21.3995 5.94668 17.136 2 11.9506 2C6.76528 2 2.50172 5.94668 2 11H7.05064C7.51391 8.71776 9.53167 7 11.9506 7C14.3696 7 16.3873 8.71776 16.8506 11H21.9012Z"
+                        fill="#fff"
+                      />
+                      <path
+                        d="M11.9506 15C13.6075 15 14.9506 13.6569 14.9506 12C14.9506 10.3431 13.6075 9 11.9506 9C10.2938 9 8.95062 10.3431 8.95062 12C8.95062 13.6569 10.2938 15 11.9506 15ZM13.4506 12C13.4506 12.8284 12.7791 13.5 11.9506 13.5C11.1222 13.5 10.4506 12.8284 10.4506 12C10.4506 11.1716 11.1222 10.5 11.9506 10.5C12.7791 10.5 13.4506 11.1716 13.4506 12Z"
+                        fill="#fff"
+                      />
+                    </svg>
+                </button>
+
+              </div>
 
             </div>
+
+
 
           {isLoading ? (
               <Loading />
@@ -127,6 +328,7 @@ const Pokedex = () => {
               filteredPokemon.map((items, index) => (
                 
                 <div className="pokedex-container" key={index}>
+                  
                   <div className={`pokedex-item w-full h-80 p-8 bg-white rounded-box shadow-md ${
                       items.identifier === "Grass" ? "hover:bg-gradient-to-t from-transparent to-[#7c5]" : 
                       items.identifier === "Fire" ? "hover:bg-gradient-to-t from-transparent to-[#f42]" :
@@ -154,59 +356,16 @@ const Pokedex = () => {
                     </div>
 
                     <div className="w-full flex gap-2 mt-5">
-                      
                       {items.type.split(' ').map((type, idx) => (
                         <div
                           key={idx}
-                          className={`w-full h-full rounded ${
-                              type === "Grass"
-                              ? "bg-[#7c5]"
-                              : type === "Water"
-                              ? "bg-[#39f]"
-                              : type === "Fire"
-                              ? "bg-[#f42]"
-                              : type === "Electric"
-                              ? "bg-[#fc3]"
-                              : type === "Flying"
-                              ? "bg-[#89f]"
-                              : type === "Ghost"
-                              ? "bg-[#66b]"
-                              : type === "Poison"
-                              ? "bg-[#a59]"
-                              : type === "Normal"
-                              ? "bg-[#aa9]"
-                              : type === "Ice"
-                              ? "bg-[#6cf]"
-                              : type === "Steel"
-                              ? "bg-[#aab]"
-                              : type === "Ground"
-                              ? "bg-[#db5]"
-                              : type === "Dragon"
-                              ? "bg-[#76e]"
-                              : type === "Fighting"
-                              ? "bg-[#b54]"
-                              : type === "Rock"
-                              ? "bg-[#ba6]"
-                              : type === "Bug"
-                              ? "bg-[#ab2]"
-                              : type === "Dark"
-                              ? "bg-[#754]"
-                              : type === "Psychic"
-                              ? "bg-[#f59]"
-                              : type === "Fairy"
-                              ? "bg-[#e9e]"
-                              : type === ""
-                              ? "hidden"
-                              : ""
-                          }`}
+                          className={`w-full h-full rounded ${getType(type)}`}
                         >
                           <p className="text-xs p-2 font-bold uppercase text-white">
                             {type}
                           </p>
                         </div>
                       ))}
-
-
                     </div>
                     
                     <div className="w-full h-5 mt-10 flex items-center justify-center">
@@ -237,12 +396,6 @@ const Pokedex = () => {
                         </svg>
                       </button>
                     </div>
-
-
-
-
-
-
 
 
                     <dialog id={items.number} className="modal p-4">
@@ -290,55 +443,15 @@ const Pokedex = () => {
                                 <h1 className="font-bold uppercase mb-2">Weakness</h1>
 
                                 <div className="flex items-center justify-center gap-2 py-1 px-2">
-                                  
-                                  {items.weakness.split(' ').map((weaknessType, idx) => (
-                                    <div
-                                      key={idx}
-                                      className={`w-7 h-7 rounded-full ${
-                                          weaknessType === "Grass"
-                                          ? "grassIcon"
-                                          : weaknessType === "Water"
-                                          ? "waterIcon"
-                                          : weaknessType === "Fire"
-                                          ? "fireIcon"
-                                          : weaknessType === "Electric"
-                                          ? "electricIcon"
-                                          : weaknessType === "Flying"
-                                          ? "flyingIcon"
-                                          : weaknessType === "Ghost"
-                                          ? "ghostIcon"
-                                          : weaknessType === "Poison"
-                                          ? "poisonIcon"
-                                          : weaknessType === "Normal"
-                                          ? "normalIcon"
-                                          : weaknessType === "Ice"
-                                          ? "iceIcon"
-                                          : weaknessType === "Steel"
-                                          ? "steelIcon"
-                                          : weaknessType === "Ground"
-                                          ? "groundIcon"
-                                          : weaknessType === "Dragon"
-                                          ? "dragonIcon"
-                                          : weaknessType === "Fighting"
-                                          ? "fightingIcon"
-                                          : weaknessType === "Rock"
-                                          ? "rockIcon"
-                                          : weaknessType === "Bug"
-                                          ? "bugIcon"
-                                          : weaknessType === "Dark"
-                                          ? "darkIcon"
-                                          : weaknessType === "Psychic"
-                                          ? "psychicIcon"
-                                          : weaknessType === "Fairy"
-                                          ? "fairyIcon"
-                                          : weaknessType === ""
-                                          ? "hidden"
-                                          : ""
-                                      }`}
-                                    >
-                                    </div>
-                                  ))}
-                                </div>
+                                {items.weakness.split(' ').map((weakness, idx) => (
+                                  <div
+                                    key={idx}
+                                    className={`w-7 h-7 rounded-full ${getWeaknessType(weakness)}`}
+                                  >
+                                  </div>
+                                ))}
+                              </div>
+
 
                               </div>
 
@@ -413,7 +526,6 @@ const Pokedex = () => {
                               <h1 className="uppercase mb-2 text-xs font-bold">Evolution</h1>
 
                               <div className="w-full h-14 flex items-center justify-between gap-4">
-                                
                                   <img src={`/images/sprites/${items.firstEvo}`} alt="" className="w-full h-full object-contain" />
                                   <p className="w-full border border-[#222224] rounded-full text-xs font-semibold capitalize py-1"> {items.first_evolution} </p>
                                   <img src={`/images/sprites/${items.secondEvo}`} alt="" className="w-full h-full object-contain" />
@@ -436,7 +548,23 @@ const Pokedex = () => {
                 </div>
               ))
               ) : (
-                <p className='font-medium text-[#222224] mt-10'>No Pokémon found matching <span className='font-bold'> "{searchQuery}" </span></p>
+                <p className='font-medium text-[#222224] mt-10'>
+                    {searchQuery ? (
+                    <>
+                      No Pokémon found matching <span className='font-bold'> "{searchQuery}" </span>
+                    </>
+                  ) : selectedType ? (
+                    <>
+                      No Pokémon found for type <span className='font-bold'> "{selectedType}" </span>
+                    </>
+                  ) : selectedWeakness ? (
+                    <>No Pokémon found for weakness <span className='font-bold'> "{selectedWeakness}" </span> </>
+                  ) : (
+                    <> No Pokémon found </>
+                  )
+                
+                }
+                </p>
               )
             )}
           </div>
